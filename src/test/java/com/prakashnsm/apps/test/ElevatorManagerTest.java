@@ -105,13 +105,13 @@ public class ElevatorManagerTest {
 		Thread.sleep(500);
 		Elevator elevator1 = elevatorManager.pickUp(new PickupRequest(4, ElevatorDirection.DOWN));
 		Thread.sleep(500);
-		Elevator elevator2 = elevatorManager.pickUp(new PickupRequest(5, ElevatorDirection.UP));
-		Thread.sleep(3000);
+		Elevator elevator2 = elevatorManager.pickUp(new PickupRequest(9, ElevatorDirection.UP));
+		Thread.sleep(5000);
 		Assert.assertTrue(elevator.getId() == elevator1.getId() && elevator.getId() == elevator2.getId());
 //		Assert.assertEquals(elevator.getId(), elevators.get(2).getId());
 //		Assert.assertEquals(elevator1.getId(), elevators.get(4).getId());
 //		Assert.assertEquals(elevator1.getId(), elevators.get(4).getId());
-		Thread.sleep(100);
+		Thread.sleep(10000);
 	  }
 	  
 	  @Test
@@ -146,7 +146,7 @@ public class ElevatorManagerTest {
 		Assert.assertEquals(elevator1.getId(), elevators.get(0).getId());
 		Assert.assertEquals(elevator2.getId(), elevators.get(4).getId());
 		
-		Thread.sleep(1000);
+		Thread.sleep(6000);
 	  }
 	  
 	  public void setElevatorFloors(int[] a) throws RequestException{

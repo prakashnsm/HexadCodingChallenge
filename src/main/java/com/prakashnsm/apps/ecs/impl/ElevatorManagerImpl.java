@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.prakashnsm.apps.ecs.Elevator;
 import com.prakashnsm.apps.ecs.ElevatorManager;
+import com.prakashnsm.apps.ecs.enums.ElevatorDirection;
 import com.prakashnsm.apps.ecs.enums.ElevatorState;
 import com.prakashnsm.apps.ecs.exception.RequestException;
 import com.prakashnsm.apps.ecs.exception.ServiceException;
@@ -109,6 +110,48 @@ public class ElevatorManagerImpl implements ElevatorManager {
 		} catch (ServiceException | RequestException e) {
 		}
 		return elevatorList.get(bestFit);
+		
+/*		
+		Elevator  bestFitElevator =  null;
+		if(pickupRequest.getDirection() == ElevatorDirection.UP){
+			for (int id : upMovingMap.keySet()) {
+				Elevator elevator = upMovingMap.get(id);
+				if(checkBestFit(bestFitElevator, elevator, pickupRequest)){
+					bestFitElevator = elevator;
+				}
+			}
+		}
+		else if(pickupRequest.getDirection() == ElevatorDirection.DOWN){
+			for (int id : downMovingMap.keySet()) {
+				Elevator elevator = downMovingMap.get(id);
+				if(checkBestFit(bestFitElevator, elevator, pickupRequest)){
+					bestFitElevator = elevator;
+				}
+			}
+		}
+		try {
+			bestFitElevator.addNewDestinatoin(pickupRequest.getRequestedFloor(), pickupRequest.getDirection());
+		} catch (ServiceException | RequestException e) {
+		}
+		return bestFitElevator;
+*/
+		
+	}
+	
+	private boolean checkBestFit(Elevator bestFitElevator, Elevator elevator, PickupRequest pickupRequest){
+		int currFloor = elevator.getCurrentFloor();
+		int requestFloor = pickupRequest.getRequestedFloor();
+		int distance = Math.abs(requestFloor - currFloor);
+		
+		return (elevator.getState().equals(ElevatorState.MOVING_UP) 
+				&&  currFloor <= requestFloor)
+				|| (elevator.getState().equals(ElevatorState.MOVING_DOWN)
+					&& currFloor >= requestFloor)
+					|| elevator.getState().equals(ElevatorState.IDLE)
+					&& (pickupRequest.getDirection() == elevator.getDirection() 
+					|| elevator.getState().equals(ElevatorState.IDLE))
+					&& (bestFitElevator == null || distance < Math.abs(requestFloor - 
+							bestFitElevator.getCurrentFloor()));
 	}
 	
     public static synchronized void updateElevatorLists(Elevator elevator){

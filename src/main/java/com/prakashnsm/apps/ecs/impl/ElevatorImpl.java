@@ -26,6 +26,8 @@ public class ElevatorImpl implements Elevator {
 	private int id;
 	private int currentFloor = 0;
 	private NavigableSet<Integer> destinationFloors;
+	private NavigableSet<Integer> upWardDestinationFloors;
+	private NavigableSet<Integer> downWardDestinationFloors;
 	private NavigableMap<Integer, ElevatorDirection> requestedDirections;
 	private ElevatorDirection direction;
 	private ElevatorState state;
@@ -36,6 +38,8 @@ public class ElevatorImpl implements Elevator {
 		this.setId(id);
 		this.setState(ElevatorState.IDLE);
 		this.destinationFloors = new ConcurrentSkipListSet<Integer>();
+		this.upWardDestinationFloors = new ConcurrentSkipListSet<Integer>();
+		this.downWardDestinationFloors  = new ConcurrentSkipListSet<Integer>();
 		requestedDirections = new TreeMap<>();
 		
 		log.debug("Elevator["+id+"] is instantiated ");
@@ -73,12 +77,21 @@ public class ElevatorImpl implements Elevator {
 					+ ElevatorManagerImpl.MIN_FLOOR_LIMIT
 					+ " to "+ ElevatorManagerImpl.MAX_FLOOR_LIMIT);
 		}
-		else if( this.destinationFloors.size() <=0 || 
+		
+		if( this.destinationFloors.size() <=0 || 
 				(this.direction == ElevatorDirection.UP && destination > currentFloor) ||
 						(this.direction == ElevatorDirection.DOWN && destination < currentFloor)){
 			setStateAndDirection(destination);
 			this.destinationFloors.add(destination);
 			this.requestedDirections.put(destination, direction);
+			
+			if(this.direction == ElevatorDirection.UP && destination > currentFloor){
+				this.upWardDestinationFloors.add(destination);
+			}
+			
+			if(this.direction == ElevatorDirection.DOWN && destination < currentFloor){
+				this.downWardDestinationFloors.add(destination);
+			}
 		}else{
 			throw new ServiceException("Unable to service for "+ destination + " floor ");
 		}
